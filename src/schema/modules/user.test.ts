@@ -1,47 +1,60 @@
-import { graphql } from "graphql"
-import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools"
-import { typeDefs, resolvers } from "./user"
+import { encode as encodeJWT } from "jwt-simple"
 
-const schema = makeExecutableSchema({ typeDefs, resolvers })
+const JWT_SECRET = process.env.JWT_SECRET || "CHANGE_ME!!!"
 
-const execute = query => graphql(schema, query)
+const jwt = id => encodeJWT({ id }, JWT_SECRET)
 
-setupDatabaseHooks(global)
+const catchErrorMessage = err => Promise.reject(err.message)
 
-const createUser = async email => {
-  const result = await execute(`
-      mutation {
-        createUser(data: {
-          email: "${email}"
-        }) {
+bootApp(global)
+
+const createUser = async data => {
+  const result = await execute(
+    `
+      mutation CreateUser($data: UserInput!){
+        createUser(data: $data) {
           id
           email
         }
       }
-    `)
+    `,
+    { data }
+  )
 
-  if (result.errors && result.errors[0]) {
-    throw result.errors[0]
-  }
-
-  return result.data.createUser
+  return result.createUser
 }
 
-describe("User module", () => {
+describe("createUser mutation", () => {
   it("creates an user", async () => {
-    const user = await createUser("example@email.com")
+    const user = await createUser({
+      email: "example@email.com",
+      password: "1234"
+    })
 
     expect(user.id).not.toBeUndefined()
     expect(user.email).toBe("example@email.com")
   })
 
-  it("throws an error if email already exists", async () => {
-    const user1 = await createUser("example@email.com")
-    return expect(createUser("example@email.com")).rejects.toBeTruthy()
-  })
+  it("throws an error if email already exists", () => {
+    const userData = { email: "example@email.com", password: "1234" }
 
+    return expect(
+      Promise.all([
+        createUser(userData), // force line break
+        createUser(userData)
+      ]).catch(catchErrorMessage)
+    ).rejects.toBe(
+      'duplicate key value violates unique constraint "uk_user_email"'
+    )
+  })
+})
+
+describe("user query", () => {
   it("gets an user by id", async () => {
-    const user = await createUser("example@email.com")
+    const user = await createUser({
+      email: "example@email.com",
+      password: "1234"
+    })
 
     const result = await execute(`
       {
@@ -52,13 +65,15 @@ describe("User module", () => {
       }
     `)
 
-    expect(result.data.user).toEqual(user)
+    expect(result.user).toEqual(user)
   })
+})
 
+describe("users query", () => {
   it("lists all users", async () => {
     const users = [
-      await createUser("example1@email.com"),
-      await createUser("example2@email.com")
+      await createUser({ email: "example1@email.com", password: "1234" }),
+      await createUser({ email: "example2@email.com", password: "1234" })
     ]
 
     const result = await execute(`
@@ -70,6 +85,72 @@ describe("User module", () => {
       }
     `)
 
-    expect(result.data.users).toEqual(users)
+    expect(result.users).toEqual(users)
   })
+})
+
+describe("login mutation ", () => {
+  const userData = {
+    email: "example@email.com",
+    password: "1234"
+  }
+
+  let user
+
+  beforeEach(async () => {
+    user = await createUser(userData)
+  })
+
+  it("returns a token", async () => {
+    const { login } = await execute(`
+      mutation {
+        login(email: "${userData.email}", password: "${userData.password}")
+      }
+    `)
+
+    expect(login).toBe(jwt(user.id))
+  })
+
+  it("throws an error if the credentials are wrong", () =>
+    expect(
+      execute(`
+        mutation {
+          login(email: "${userData.email}", password: "wrong password")
+        }
+      `).catch(catchErrorMessage)
+    ).rejects.toBe("Unauthorized"))
+})
+
+describe("me query", () => {
+  it("returns the logged user", async () => {
+    const user = { id: 1, email: "some email" }
+    const context = { user }
+
+    const loggedUser = await execute(
+      `
+        {
+          me {
+            id
+            email
+          }
+        }
+      `,
+      null,
+      context
+    )
+
+    expect(loggedUser.me).toEqual(user)
+  })
+
+  it("throws an error if the token is missing or is invalid", () =>
+    expect(
+      execute(`
+      {
+        me {
+          id
+          email
+        }
+      }
+    `).catch(catchErrorMessage)
+    ).rejects.toBe("Unauthorized"))
 })
