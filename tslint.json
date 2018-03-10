@@ -5,7 +5,11 @@
   "rules": {
     "arrow-parens": false,
     "semicolon": false,
-    "no-console": false
+    "no-console": false,
+    "ordered-imports": false,
+    "member-access": false,
+    "trailing-comma": false,
+    "object-literal-sort-keys": false
   },
   "rulesDirectory": []
 }

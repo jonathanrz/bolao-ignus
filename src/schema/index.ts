@@ -1,27 +1,22 @@
-import {GraphQLSchema} from 'graphql';
-import {makeExecutableSchema} from 'graphql-schema-tools';
-
 /* tslint:disable:no-var-requires */
-const modules = [
-  require("./modules/some-type"),
-  require("./modules/person-type"),
-  require("./modules/query"),
-];
+import { GraphQLSchema } from "graphql"
+import { makeExecutableSchema } from "graphql-tools"
 
-const mainDefs = [`
-    schema {
-        query: Query,
-        mutation: Mutation
-    }
-`,
-];
+const modules = [require("./modules/user")]
 
-const resolvers = modules.map((m) => m.resolver).filter((res) => !!res);
-const typeDefs = mainDefs.concat(modules.map((m) => m.typeDef).filter((res) => !!res));
+const mainDef = `
+  schema {
+    query: Query,
+    mutation: Mutation
+  }
+`
 
-const Schema: GraphQLSchema = makeExecutableSchema({
-  resolvers: resolvers,
-  typeDefs: typeDefs,
-});
+const resolvers: any = modules.map(m => m.resolver).filter(res => !!res)
 
-export {Schema};
+const typeDefs: any = [mainDef].concat(
+  modules.map(m => m.typeDef).filter(res => !!res)
+)
+
+const schema: GraphQLSchema = makeExecutableSchema({ resolvers, typeDefs })
+
+export { schema }
