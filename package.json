@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "ts-node src/index.ts",
     "dev": "nodemon --exec ts-node src/index.ts"
   },
@@ -12,10 +12,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jest": "^22.2.0",
     "graphql-yoga": "^1.5.1",
+    "jest": "^22.4.2",
     "mysql": "^2.14.1",
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
+    "ts-jest": "^22.4.1",
     "typeorm": "0.1.16"
   },
   "devDependencies": {
@@ -25,5 +28,13 @@
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "typescript": "2.5.2"
+  },
+  "jest": {
+    "setupFiles": ["./testSetup.ts"],
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js?|ts?)$",
+    "moduleFileExtensions": ["ts", "js"]
   }
 }

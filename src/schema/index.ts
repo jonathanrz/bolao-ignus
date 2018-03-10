@@ -11,10 +11,10 @@ const mainDef = `
   }
 `
 
-const resolvers: any = modules.map(m => m.resolver).filter(res => !!res)
+const resolvers: any = modules.map(m => m.resolvers).filter(res => !!res)
 
 const typeDefs: any = [mainDef].concat(
-  modules.map(m => m.typeDef).filter(res => !!res)
+  modules.map(m => m.typeDefs).filter(res => !!res)
 )
 
 const schema: GraphQLSchema = makeExecutableSchema({ resolvers, typeDefs })

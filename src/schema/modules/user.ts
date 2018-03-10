@@ -1,6 +1,6 @@
 import { User } from "../../entity/User"
 
-export const typeDef = `
+export const typeDefs = `
   type User {
     id: Int
     email: String
@@ -20,7 +20,7 @@ export const typeDef = `
   }
 `
 
-export const resolver = {
+export const resolvers = {
   Query: {
     user: (_, { id }) => User.findOneById(id),
     users: () => User.find()
