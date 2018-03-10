@@ -26,8 +26,8 @@ global.clearDatabase = () => {
   return connection.query(sql)
 }
 
-global.setupDatabaseHooks = _global => {
-  _global.beforeAll(_global.createConnection)
-  _global.beforeEach(_global.clearDatabase)
-  _global.afterAll(_global.closeConnection)
+global.setupDatabaseHooks = testSuiteGlobalRef => {
+  testSuiteGlobalRef.beforeAll(testSuiteGlobalRef.createConnection)
+  testSuiteGlobalRef.beforeEach(testSuiteGlobalRef.clearDatabase)
+  testSuiteGlobalRef.afterAll(testSuiteGlobalRef.closeConnection)
 }

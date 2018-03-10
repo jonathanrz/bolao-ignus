@@ -20,6 +20,10 @@ const createUser = async email => {
       }
     `)
 
+  if (result.errors && result.errors[0]) {
+    throw result.errors[0]
+  }
+
   return result.data.createUser
 }
 
@@ -29,6 +33,11 @@ describe("User module", () => {
 
     expect(user.id).not.toBeUndefined()
     expect(user.email).toBe("example@email.com")
+  })
+
+  it("throws an error if email already exists", async () => {
+    const user1 = await createUser("example@email.com")
+    return expect(createUser("example@email.com")).rejects.toBeTruthy()
   })
 
   it("gets an user by id", async () => {
