@@ -6,6 +6,9 @@ const jwt = id => encodeJWT({ id }, JWT_SECRET)
 
 const catchErrorMessage = err => Promise.reject(err.message)
 
+declare var bootApp: any
+declare var execute: any
+
 bootApp(global)
 
 const createUser = async data => {

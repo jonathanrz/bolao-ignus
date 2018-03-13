@@ -4,6 +4,7 @@ import { graphql } from "graphql"
 import { schema } from "./src/schema"
 import { ensureAuth } from "./src/authentication"
 
+declare var global: any;
 let connection: Connection = null
 
 global.createConnection = async () => {
