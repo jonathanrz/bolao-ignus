@@ -1,4 +1,5 @@
 import { encode as encodeJWT } from "jwt-simple"
+import { createUser } from "./testBuilders"
 
 const JWT_SECRET = process.env.JWT_SECRET || "CHANGE_ME!!!"
 
@@ -11,27 +12,10 @@ declare var execute: any
 
 bootApp(global)
 
-const createUser = async data => {
-  const result = await execute(
-    `
-      mutation CreateUser($data: UserInput!){
-        createUser(data: $data) {
-          id
-          email
-        }
-      }
-    `,
-    { data }
-  )
-
-  return result.createUser
-}
-
 describe("createUser mutation", () => {
   it("creates an user", async () => {
     const user = await createUser({
-      email: "example@email.com",
-      password: "1234"
+      email: "example@email.com"
     })
 
     expect(user.id).not.toBeUndefined()
@@ -39,7 +23,7 @@ describe("createUser mutation", () => {
   })
 
   it("throws an error if email already exists", () => {
-    const userData = { email: "example@email.com", password: "1234" }
+    const userData = { email: "example@email.com" }
 
     return expect(
       Promise.all([
@@ -54,10 +38,7 @@ describe("createUser mutation", () => {
 
 describe("user query", () => {
   it("gets an user by id", async () => {
-    const user = await createUser({
-      email: "example@email.com",
-      password: "1234"
-    })
+    const user = await createUser()
 
     const result = await execute(`
       {
@@ -75,8 +56,8 @@ describe("user query", () => {
 describe("users query", () => {
   it("lists all users", async () => {
     const users = [
-      await createUser({ email: "example1@email.com", password: "1234" }),
-      await createUser({ email: "example2@email.com", password: "1234" })
+      await createUser({ email: "example1@email.com" }),
+      await createUser({ email: "example2@email.com" })
     ]
 
     const result = await execute(`
@@ -145,15 +126,15 @@ describe("me query", () => {
     expect(loggedUser.me).toEqual(user)
   })
 
-  it("throws an error if the token is missing or is invalid", () =>
-    expect(
-      execute(`
+  it("throws an error if the token is missing or is invalid", async () => {
+    const loggedUser = await execute(`
       {
         me {
           id
           email
         }
       }
-    `).catch(catchErrorMessage)
-    ).rejects.toBe("Unauthorized"))
+    `)
+    expect(loggedUser.me).toEqual(null)
+  })
 })
