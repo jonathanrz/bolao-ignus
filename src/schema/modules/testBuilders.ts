@@ -1,7 +1,11 @@
 declare var execute: any
 
 export const createUser = async (values = {}) => {
-  const defaultValues = { email: "example@email.com", password: "password" }
+  const defaultValues = {
+    name: "example",
+    email: "example@email.com",
+    password: "password"
+  }
   const data = { ...defaultValues, ...values }
   const result = await execute(
     `

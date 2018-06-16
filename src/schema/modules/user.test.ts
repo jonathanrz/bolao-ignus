@@ -27,8 +27,8 @@ describe("createUser mutation", () => {
 
     return expect(
       Promise.all([
-        createUser(userData), // force line break
-        createUser(userData)
+        createUser({ ...userData, name: "example" }), // force line break
+        createUser({ ...userData, name: "example2" })
       ]).catch(catchErrorMessage)
     ).rejects.toBe(
       'duplicate key value violates unique constraint "uk_user_email"'
@@ -56,8 +56,8 @@ describe("user query", () => {
 describe("users query", () => {
   it("lists all users", async () => {
     const users = [
-      await createUser({ email: "example1@email.com" }),
-      await createUser({ email: "example2@email.com" })
+      await createUser({ name: "example1", email: "example1@email.com" }),
+      await createUser({ name: "example2", email: "example2@email.com" })
     ]
 
     const result = await execute(`

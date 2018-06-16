@@ -7,10 +7,12 @@ const isTestEnv = true
 export const typeDefs = `
   type User {
     id: Int
+    name: String!
     email: String!
   }
 
   input UserInput {
+    name: String!
     email: String!
     password: String!
   }
