@@ -18,7 +18,7 @@ export const createUser = async (values = {}) => {
   return result.createUser
 }
 
-export const createTeam = async data => {
+export const createTeam = async (data, context) => {
   const result = await execute(
     `
       mutation CreateTeam($data: TeamInput!){
@@ -29,7 +29,8 @@ export const createTeam = async data => {
         }
       }
     `,
-    { data }
+    { data },
+    context
   )
 
   return result.createTeam

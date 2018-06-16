@@ -1,4 +1,5 @@
 import { Team } from "../../entity/Team"
+import { withAuth } from "../../authentication"
 
 export const typeDefs = `
   type Team {
@@ -24,10 +25,10 @@ export const mutation = `
 
 export const resolvers = {
   Query: {
-    team: (_, { id }) => Team.findOneById(id),
-    teams: () => Team.find()
+    team: withAuth((_, { id }) => Team.findOneById(id)),
+    teams: withAuth(() => Team.find())
   },
   Mutation: {
-    createTeam: (_, { data }) => Team.create({ ...data }).save()
+    createTeam: withAuth((_, { data }) => Team.create({ ...data }).save())
   }
 }
