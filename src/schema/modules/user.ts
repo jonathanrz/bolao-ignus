@@ -2,7 +2,7 @@ import * as jwt from "jwt-simple"
 import { User } from "../../entity/User"
 
 const JWT_SECRET = process.env.JWT_SECRET || "CHANGE_ME!!!"
-const isTestEnv = true
+const isTestEnv = process.env.NODE_ENV === "test"
 
 export const typeDefs = `
   type User {
