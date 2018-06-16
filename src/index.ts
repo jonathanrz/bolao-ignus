@@ -7,7 +7,7 @@ import { createConnection } from "typeorm"
 import { schema } from "./schema"
 import { authentication, ensureAuth } from "./authentication"
 
-const PORT: number = parseInt(process.env.port, 10) || 4000
+const PORT: number = parseInt(process.env.PORT, 10) || 4000
 
 createConnection().then(() => {
   const server = new GraphQLServer({
