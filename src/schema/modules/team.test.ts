@@ -1,4 +1,4 @@
-import { createUser, createTeam } from "./testBuilders"
+import { createUser, createTeam, updateTeam } from "./testBuilders"
 
 const catchErrorMessage = err => Promise.reject(err.message)
 
@@ -16,17 +16,28 @@ describe("createTeam mutation", () => {
   })
 
   it("creates a team", async () => {
-    const team = await createTeam(
-      {
-        initials: "BRA",
-        name: "Brasil"
-      },
-      context
-    )
+    const team = await createTeam({ initials: "BRA", name: "Brasil" }, context)
 
     expect(team.id).not.toBeUndefined()
     expect(team.initials).toBe("BRA")
     expect(team.name).toBe("Brasil")
+  })
+
+  it("creates and updates a team", async () => {
+    const teamOriginal = await createTeam(
+      { initials: "BRA", name: "Brasil" },
+      context
+    )
+
+    const teamUpdated = await updateTeam(
+      teamOriginal.id,
+      { initials: "BRA Updated", name: "Brasil Updated" },
+      context
+    )
+
+    expect(teamUpdated.id).toBe(teamOriginal.id)
+    expect(teamUpdated.initials).toBe("BRA Updated")
+    expect(teamUpdated.name).toBe("Brasil Updated")
   })
 
   it("throws an error if team already exists", () => {

@@ -35,3 +35,21 @@ export const createTeam = async (data, context) => {
 
   return result.createTeam
 }
+
+export const updateTeam = async (id, data, context) => {
+  const result = await execute(
+    `
+      mutation UpdateTeam($id: Int!, $data: TeamInput!){
+        updateTeam(id: $id, data: $data) {
+          id
+          initials
+          name
+        }
+      }
+    `,
+    { id, data },
+    context
+  )
+
+  return result.updateTeam
+}

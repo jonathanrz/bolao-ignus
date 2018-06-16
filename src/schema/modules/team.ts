@@ -21,6 +21,7 @@ export const query = `
 
 export const mutation = `
   createTeam(data: TeamInput!): Team
+  updateTeam(id: Int!, data: TeamInput!): Team
 `
 
 export const resolvers = {
@@ -29,6 +30,10 @@ export const resolvers = {
     teams: withAuth(() => Team.find())
   },
   Mutation: {
-    createTeam: withAuth((_, { data }) => Team.create({ ...data }).save())
+    createTeam: withAuth((_, { data }) => Team.create({ ...data }).save()),
+    updateTeam: withAuth((_, { id, data }, { user }) => {
+      Team.update({ id }, { ...data })
+      return Team.findOne({ id })
+    })
   }
 }
