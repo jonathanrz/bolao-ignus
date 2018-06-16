@@ -2,7 +2,7 @@ import * as jwt from "jwt-simple"
 import { User } from "../../entity/User"
 
 const JWT_SECRET = process.env.JWT_SECRET || "CHANGE_ME!!!"
-const isTestEnv = process.env.NODE_ENV === "test"
+const isTestEnv = true
 
 export const typeDefs = `
   type User {
@@ -39,9 +39,9 @@ const mutations: any = {
   }
 }
 
-// if (isTestEnv) {
-mutations.createUser = (_, { data }) => User.create({ ...data }).save()
-// }
+if (isTestEnv) {
+  mutations.createUser = (_, { data }) => User.create({ ...data }).save()
+}
 
 export const resolvers = {
   Query: {
