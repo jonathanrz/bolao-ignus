@@ -1,0 +1,121 @@
+version: 2
+jobs:
+  lint:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:8.9.3
+    steps:
+      - checkout
+      - run:
+          name: update yarn
+          command: sudo npm install yarn@1.3.2 --global
+      - restore_cache:
+          key: v2-dependencies-node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install
+          command: yarn install
+      - save_cache:
+          key: v2-dependencies-node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+      - run:
+          name: run linters
+          command: yarn lint
+
+  test:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:8.9.3
+        environment:
+          POSTGRES_DB: myinvestments
+          POSTGRES_USER: "user"
+          POSTGRES_PASSWORD: "password"
+      - image: circleci/postgres:9.6-alpine-ram
+        environment:
+          POSTGRES_DB: myinvestments-test
+          POSTGRES_USER: "user"
+          POSTGRES_PASSWORD: "password"
+    steps:
+      - checkout
+      - run:
+          name: update yarn
+          command: sudo npm install yarn@1.3.2 --global
+      - restore_cache:
+          key: v2-dependencies-node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install
+          command: yarn install
+      - save_cache:
+          key: v2-dependencies-node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+      - run:
+          name: test
+          command: yarn test --maxWorkers 1
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+  staging:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: install heroku
+          command: |
+            bash .circleci/setup-heroku.sh
+      - deploy:
+          name: Deploy Master to Staging Heroku
+          command: |
+            git remote add heroku https://git.heroku.com/bolao-ignus-stg.git
+            git push heroku master
+
+  production:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: install heroku
+          command: |
+            bash .circleci/setup-heroku.sh
+      - deploy:
+          name: Deploy Master to Production Heroku
+          command: |
+            git remote add heroku https://git.heroku.com/bolao-ignus-prd.git
+            git push heroku master
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test
+      - lint
+      - staging:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - release:
+          type: approval
+          requires:
+            - staging
+          filters:
+            branches:
+              only:
+                - master
+      - production:
+          requires:
+            - release
+          filters:
+            branches:
+              only:
+                - master
