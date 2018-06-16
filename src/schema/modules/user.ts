@@ -39,9 +39,9 @@ const mutations: any = {
   }
 }
 
-if (isTestEnv) {
-  mutations.createUser = (_, { data }) => User.create({ ...data }).save()
-}
+// if (isTestEnv) {
+mutations.createUser = (_, { data }) => User.create({ ...data }).save()
+// }
 
 export const resolvers = {
   Query: {
