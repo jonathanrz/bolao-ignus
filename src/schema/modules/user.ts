@@ -2,7 +2,8 @@ import * as jwt from "jwt-simple"
 import { User } from "../../entity/User"
 
 const JWT_SECRET = process.env.JWT_SECRET || "CHANGE_ME!!!"
-const isTestEnv = process.env.NODE_ENV === "test"
+// const canCreateUser = process.env.NODE_ENV === "test"
+const canCreateUser = true
 
 export const typeDefs = `
   type User {
@@ -25,7 +26,7 @@ export const query = `
 `
 
 export const mutation = `
-  ${isTestEnv ? "createUser(data: UserInput!): User" : ""}
+  ${canCreateUser ? "createUser(data: UserInput!): User" : ""}
   login(email: String!, password: String!): String
 `
 
@@ -41,7 +42,7 @@ const mutations: any = {
   }
 }
 
-if (isTestEnv) {
+if (canCreateUser) {
   mutations.createUser = (_, { data }) => User.create({ ...data }).save()
 }
 

@@ -26,8 +26,8 @@ export const mutation = `
 
 export const resolvers = {
   Query: {
-    team: withAuth((_, { id }) => Team.findOneById(id)),
-    teams: withAuth(() => Team.find())
+    teams: withAuth(() => Team.find()),
+    team: withAuth((_, { id }) => Team.findOneById(id))
   },
   Mutation: {
     createTeam: withAuth((_, { data }) => Team.create({ ...data }).save()),
