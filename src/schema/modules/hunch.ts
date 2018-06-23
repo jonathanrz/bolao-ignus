@@ -30,8 +30,12 @@ export const mutation = `
 
 export const resolvers = {
   Query: {
-    hunchs: withAuth(() => Hunch.find()),
-    hunch: withAuth((_, { id }) => Hunch.findOneById(id))
+    hunchs: withAuth((_, __, { user }) =>
+      Hunch.find({ where: { user: user.id } })
+    ),
+    hunch: withAuth((_, { id }, { user }) =>
+      Hunch.findOne({ id, user: user.id })
+    )
   },
   Mutation: {
     createHunch: withAuth(async (_, { data }, { user }) => {
