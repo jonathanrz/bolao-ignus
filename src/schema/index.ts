@@ -5,7 +5,8 @@ import { makeExecutableSchema } from "graphql-tools"
 const modules = [
   require("./modules/user"),
   require("./modules/team"),
-  require("./modules/match")
+  require("./modules/match"),
+  require("./modules/hunch")
 ]
 
 const resolvers: any = modules.map(m => m.resolvers).filter(res => !!res)
