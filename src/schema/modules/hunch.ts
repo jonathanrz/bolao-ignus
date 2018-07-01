@@ -1,6 +1,5 @@
 import { Hunch } from "../../entity/Hunch"
 import { Match } from "../../entity/Match"
-import { User } from "../../entity/User"
 import { withAuth } from "../../authentication"
 
 export const typeDefs = `

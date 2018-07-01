@@ -20,7 +20,7 @@
     "graphql-yoga": "^1.5.1",
     "jest": "^22.4.2",
     "jwt-simple": "^0.5.1",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "mysql": "^2.14.1",
     "passport": "^0.4.0",
     "passport-jwt": "^3.0.1",
@@ -38,11 +38,16 @@
     "typescript": "2.5.2"
   },
   "jest": {
-    "setupFiles": ["./testSetup.ts"],
+    "setupFiles": [
+      "./testSetup.ts"
+    ],
     "transform": {
       "^.+\\.ts?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js?|ts?)$",
-    "moduleFileExtensions": ["ts", "js"]
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
   }
 }
