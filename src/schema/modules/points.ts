@@ -12,12 +12,18 @@ export const typeDefs = `
     name: String!
     points: Int!
   }
+
+  type HunchUserPoint {
+    name: String!
+    points: Int!
+    result: Result
+  }
 `
 
 export const query = `
   points: [UserPoint!]!
   userPoints(userId: Int!): UserPoint!
-  hunchPoints(hunchId: Int!): UserPoint!
+  hunchPoints(hunchId: Int!): HunchUserPoint!
 `
 
 export const mutation = ``
@@ -64,7 +70,7 @@ export const resolvers = {
         return { name: user.name, points: -1 }
       }
 
-      return { name: user.name, points: matchPoints(result, hunch) }
+      return { name: user.name, points: matchPoints(result, hunch), result }
     })
   },
   Mutation: {}
