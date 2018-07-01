@@ -61,7 +61,7 @@ export const resolvers = {
       const hunch = await Hunch.findOne({ id: hunchId, user: user.id })
       const result = await Result.findOne({ match: hunch.match.id })
       if (!result) {
-        return -1
+        return { name: user.name, points: -1 }
       }
 
       return { name: user.name, points: matchPoints(result, hunch) }
