@@ -1,5 +1,5 @@
 export function matchPoints(result, hunch) {
-  if (!hunch) {
+  if (!result || !hunch) {
     return 0
   }
 
