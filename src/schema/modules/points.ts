@@ -16,8 +16,8 @@ export const typeDefs = `
 
 export const query = `
   points: [UserPoint!]!
-  userPoints(userId: Int!): Int!
-  hunchPoints(hunchId: Int!): Int!
+  userPoints(userId: Int!): UserPoint!
+  hunchPoints(hunchId: Int!): UserPoint!
 `
 
 export const mutation = ``
@@ -55,7 +55,7 @@ export const resolvers = {
         }
       })
 
-      return points
+      return { name: user.name, points }
     }),
     hunchPoints: withAuth(async (_, { hunchId }, { user }) => {
       const hunch = await Hunch.findOne({ id: hunchId, user: user.id })
@@ -64,7 +64,7 @@ export const resolvers = {
         return -1
       }
 
-      return matchPoints(result, hunch)
+      return { name: user.name, points: matchPoints(result, hunch) }
     })
   },
   Mutation: {}
