@@ -7,7 +7,8 @@ const modules = [
   require("./modules/team"),
   require("./modules/match"),
   require("./modules/hunch"),
-  require("./modules/result")
+  require("./modules/result"),
+  require("./modules/points")
 ]
 
 const resolvers: any = modules.map(m => m.resolvers).filter(res => !!res)
