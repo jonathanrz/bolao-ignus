@@ -9,7 +9,8 @@ import { withAuth } from "../../authentication"
 export const typeDefs = ``
 
 export const query = `
-  points(userId: Int!): Int
+  points(userId: Int!): Int!
+  hunchPoints(hunchId: Int!): Int!
 `
 
 export const mutation = ``
@@ -29,6 +30,15 @@ export const resolvers = {
       })
 
       return points
+    }),
+    hunchPoints: withAuth(async (_, { hunchId }, { user }) => {
+      const hunch = await Hunch.findOne({ id: hunchId, user: user.id })
+      const result = await Result.findOne({ match: hunch.match.id })
+      if (!result) {
+        throw new Error(`Match ${hunch.match.id} doesn't have a result`)
+      }
+
+      return matchPoints(result, hunch)
     })
   },
   Mutation: {}
